@@ -5,7 +5,7 @@ export const updateOrderSchema = z.object({
   client: z
     .object({
       name: z.string(),
-      email: z.string(),
+      email: z.string().email(),
       document: z.string(),
     })
     .optional(),

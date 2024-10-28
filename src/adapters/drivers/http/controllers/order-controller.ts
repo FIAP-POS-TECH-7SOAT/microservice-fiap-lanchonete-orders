@@ -2,6 +2,9 @@ import {
   Body,
   Controller,
   Get,
+  HttpCode,
+  HttpException,
+  HttpStatus,
   Param,
   Post,
   Put,
@@ -32,6 +35,10 @@ import { CancelOrderByIdUseCase } from '@core/modules/orders/application/use-cas
 import { OrderMapping } from '../mapping/order-mapping';
 import { UpdateOrderStatusByIdUseCase } from '@core/modules/orders/application/use-case/update-order-status-by-id.use-case';
 import { UpdateStatusOrderProps } from './validations/update-status-order.validate';
+import { ResourceNotFoundError } from '@core/modules/orders/application/errors/resource-not-found-error';
+import { ResourceAlreadyProcessedError } from '@core/modules/orders/application/errors/resource-already-processed-error';
+import { TOrderStatus } from '@core/modules/orders/entities/order';
+import { InvalidOrderStatusError } from '@core/modules/orders/application/errors/invalid-order-status-error';
 
 @Controller('/orders')
 @ApiTags('Orders')
@@ -48,6 +55,7 @@ export class OrderController {
   ) {}
 
   @Post('/')
+  @HttpCode(201)
   @UsePipes(new ZodValidationPipe(createOrderSchema))
   async create(@Body() body: CreateOrderProps) {
     const { client, products } = body;
@@ -65,6 +73,7 @@ export class OrderController {
   }
 
   @Put('/:id')
+  @HttpCode(200)
   @UsePipes(new ZodValidationPipe(updateOrderSchema))
   async updateByOrderId(
     @Body() body: UpdateOrderProps,
@@ -77,13 +86,22 @@ export class OrderController {
       client: client ? client : null,
     });
     if (result.isLeft()) {
-      throw new Error('');
+      if (result.value instanceof ResourceNotFoundError) {
+        throw new HttpException('Order not found', HttpStatus.NOT_FOUND);
+      } else {
+        throw new HttpException(
+          'Internal server error',
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
     }
     return {
       order: OrderMapping.toView(result.value.order),
     };
   }
+
   @Get('/')
+  @HttpCode(200)
   @UsePipes(new ZodValidationPipe(filtersOrderSchema))
   async listAllOrders(@Query() query: FiltersOrderProps) {
     const { status } = query;
@@ -113,36 +131,69 @@ export class OrderController {
   }
 
   @Get('/:id')
+  @HttpCode(200)
   @UsePipes(new ZodValidationPipe(filtersOrderSchema))
   async getOneById(@Param('id') id: string) {
     const result = await this.findOrderByIdUseCase.execute({ id });
     if (result.isLeft()) {
-      throw new Error('');
+      if (result.value instanceof ResourceNotFoundError) {
+        throw new HttpException('Order not found', HttpStatus.NOT_FOUND);
+      } else {
+        throw new HttpException(
+          'Internal server error',
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
     }
     return {
       order: OrderMapping.toView(result.value.order),
     };
   }
-  @Put('/:id')
+
+  @Put('/:id/cancel')
+  @HttpCode(200)
   async cancel(@Param('id') id: string) {
     const result = await this.cancelOrderByIdUseCase.execute({ id });
     if (result.isLeft()) {
-      throw new Error('');
+      if (result.value instanceof ResourceNotFoundError) {
+        throw new HttpException('Order not found', HttpStatus.NOT_FOUND);
+      } else if (result.value instanceof ResourceAlreadyProcessedError) {
+        throw new HttpException(
+          'Order has already been canceled',
+          HttpStatus.CONFLICT,
+        );
+      } else {
+        throw new HttpException(
+          'Internal server error',
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
     }
     return {
       order: OrderMapping.toView(result.value.order),
     };
   }
+
   @Put('/:id/status/:status')
+  @HttpCode(200)
   async updateStatus(@Param() params: UpdateStatusOrderProps) {
     const { id, status } = params;
 
     const result = await this.updateOrderStatusByIdUseCase.execute({
       id,
-      status,
+      status: status.toUpperCase() as TOrderStatus,
     });
     if (result.isLeft()) {
-      throw new Error('');
+      if (result.value instanceof ResourceNotFoundError) {
+        throw new HttpException('Order not found', HttpStatus.NOT_FOUND);
+      } else if (result.value instanceof InvalidOrderStatusError) {
+        throw new HttpException('Invalid order status', HttpStatus.BAD_REQUEST);
+      } else {
+        throw new HttpException(
+          'Internal server error',
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
     }
     return {
       order: OrderMapping.toView(result.value.order),

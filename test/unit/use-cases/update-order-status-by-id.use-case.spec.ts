@@ -24,7 +24,7 @@ describe(UpdateOrderStatusByIdUseCase.name, () => {
   it('should update order status by id', async () => {
     const myOrder = Order.create(
       {
-        status: 'Pendente',
+        status: 'PENDENTE',
         total_amount: 1,
         total_price: 1,
         code: 'fake-code',
@@ -37,19 +37,19 @@ describe(UpdateOrderStatusByIdUseCase.name, () => {
 
     const result = await sut.execute({
       id: 'fake_id_1',
-      status: 'Recebido',
+      status: 'RECEBIDO',
     });
     const order = await orderRepository.findById('fake_id_1');
     expect(result.isRight()).toBeTruthy();
     if (result.isRight()) {
-      expect(order?.status).toEqual('Recebido');
+      expect(order?.status).toEqual('RECEBIDO');
     }
   });
 
   it('should not update order status by id with a invalid status', async () => {
     const myOrder = Order.create(
       {
-        status: 'Pendente',
+        status: 'PENDENTE',
         total_amount: 1,
         total_price: 1,
         code: 'fake-code',
@@ -73,7 +73,7 @@ describe(UpdateOrderStatusByIdUseCase.name, () => {
   it('should not update order status by id with a unexistent order', async () => {
     const result = await sut.execute({
       id: 'unexitent_fake_id_1',
-      status: 'Em preparação',
+      status: 'EM PREPARACAO',
     });
 
     expect(result.isLeft()).toBeTruthy();

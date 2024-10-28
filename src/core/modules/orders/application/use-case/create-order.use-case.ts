@@ -26,7 +26,7 @@ export class CreateOrderUseCase {
   async execute({ client, products }: RequestProps): Promise<ResponseProps> {
     const order = Order.create({
       client,
-      status: 'Pendente',
+      status: 'PENDENTE',
       code: '',
       total_amount: 0,
       total_price: 0,

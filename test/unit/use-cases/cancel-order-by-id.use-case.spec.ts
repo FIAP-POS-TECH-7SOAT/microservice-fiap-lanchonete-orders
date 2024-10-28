@@ -33,7 +33,7 @@ describe(CancelOrderByIdUseCase.name, () => {
     jest.setSystemTime(fixedDate);
     const myOrder = Order.create(
       {
-        status: 'Pendente',
+        status: 'PENDENTE',
         total_amount: 1,
         total_price: 1,
         code: '',
@@ -72,7 +72,7 @@ describe(CancelOrderByIdUseCase.name, () => {
   it('should not cancel a order by id when the order is already canceled', async () => {
     const myOrder = Order.create(
       {
-        status: 'Pendente',
+        status: 'PENDENTE',
         total_amount: 1,
         total_price: 1,
         code: '',
@@ -96,7 +96,7 @@ describe(CancelOrderByIdUseCase.name, () => {
   it('should not cancel a order by id when the order is already in progress', async () => {
     const myOrder = Order.create(
       {
-        status: 'Pendente',
+        status: 'PENDENTE',
         total_amount: 1,
         total_price: 1,
         code: 'fake-code',
