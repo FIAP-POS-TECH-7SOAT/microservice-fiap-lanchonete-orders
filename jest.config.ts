@@ -5,9 +5,10 @@ export default {
   transform: {
     '^.+\\.(t|j)s$': 'ts-jest',
   },
+
   collectCoverageFrom: ['src/**/*.{js,ts}'],
-  coveragePathIgnorePatterns: ['/dist/'],
-  coverageDirectory: './coverage',
+  coveragePathIgnorePatterns: ['/dist/', '\\.module\\.ts$', '/prisma/'],
+  coverageDirectory: './coverage/unit',
   testEnvironment: 'node',
   moduleNameMapper: {
     '^@core/(.*)$': '<rootDir>/src/core/$1',

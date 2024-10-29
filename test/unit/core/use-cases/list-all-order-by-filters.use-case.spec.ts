@@ -32,7 +32,7 @@ describe(ListAllOrdersByFiltersUseCase.name, () => {
   it('should return all orders ', async () => {
     await orderRepository.create(
       Order.create({
-        status: 'Pendente',
+        status: 'PENDENTE',
         total_amount: 1,
         total_price: 1,
         code: '',
@@ -41,7 +41,7 @@ describe(ListAllOrdersByFiltersUseCase.name, () => {
     );
     await orderRepository.create(
       Order.create({
-        status: 'Em preparação',
+        status: 'EM PREPARACAO',
         total_amount: 1,
         total_price: 1,
         code: '',
@@ -63,7 +63,7 @@ describe(ListAllOrdersByFiltersUseCase.name, () => {
   it('should return all orders match filters', async () => {
     await orderRepository.create(
       Order.create({
-        status: 'Pendente',
+        status: 'PENDENTE',
         total_amount: 1,
         total_price: 1,
         code: '',
@@ -72,7 +72,7 @@ describe(ListAllOrdersByFiltersUseCase.name, () => {
     );
     await orderRepository.create(
       Order.create({
-        status: 'Em preparação',
+        status: 'EM PREPARACAO',
         total_amount: 1,
         total_price: 1,
         code: '',
@@ -81,14 +81,14 @@ describe(ListAllOrdersByFiltersUseCase.name, () => {
     );
     const result = await sut.execute({
       filters: {
-        status: ['Em preparação'],
+        status: ['EM PREPARACAO'],
       },
     });
 
     expect(result.isRight()).toBeTruthy();
     if (result.isRight()) {
       expect(result.value.orders).toHaveLength(1);
-      expect(result.value.orders[0].status).toEqual('Em preparação');
+      expect(result.value.orders[0].status).toEqual('EM PREPARACAO');
     }
   });
 });
