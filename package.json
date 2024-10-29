@@ -19,7 +19,8 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./jest-e2e.json",
+    "test:e2e:cov": "jest --config ./jest-e2e.json --coverage"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",
@@ -29,6 +30,7 @@
     "@nestjs/swagger": "^7.4.2",
     "@nestjs/throttler": "^6.2.1",
     "@prisma/client": "^5.20.0",
+    "@testcontainers/postgresql": "^10.13.2",
     "date-fns": "^4.1.0",
     "nestjs-zod": "^3.0.0",
     "reflect-metadata": "^0.2.0",

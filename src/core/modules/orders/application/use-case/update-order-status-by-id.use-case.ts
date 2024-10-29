@@ -19,20 +19,36 @@ type ResponseProps = Either<
 export class UpdateOrderStatusByIdUseCase {
   constructor(private orderRepository: OrderRepository) {}
   async execute({ id, status }: RequestProps): Promise<ResponseProps> {
+    const ORDER_STATUS_FLOW = [
+      'PENDENTE',
+      'RECEBIDO',
+      'EM PREPARACAO',
+      'PRONTO',
+      'FINALIZADO',
+    ];
     const STATUS_FLOW = {
-      Pendente: 'Recebido',
-      Recebido: 'Em preparação',
-      'Em preparação': 'Pronto',
-      Pronto: 'Finalizado',
-      Finalizado: null,
+      PENDENTE: 'RECEBIDO',
+      RECEBIDO: 'EM PREPARACAO',
+      'EM PREPARACAO': 'PRONTO',
+      PRONTO: 'FINALIZADO',
+      FINALIZADO: null,
     };
 
     const order = await this.orderRepository.findById(id);
     if (!order) {
       return left(new ResourceNotFoundError());
     }
+
     const newStatus = STATUS_FLOW[status];
     if (!newStatus) {
+      return left(new InvalidOrderStatusError());
+    }
+
+    const currentPosition = ORDER_STATUS_FLOW.findIndex(
+      (item) => item === order.status,
+    );
+    const nextPosition = ORDER_STATUS_FLOW.findIndex((item) => item === status);
+    if (currentPosition > nextPosition) {
       return left(new InvalidOrderStatusError());
     }
     order.status = status;

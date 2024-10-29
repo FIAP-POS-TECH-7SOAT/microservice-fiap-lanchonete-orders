@@ -29,7 +29,7 @@ export class PrismaOrderRepository implements OrderRepository {
   }
 
   async getAll({ filters }: GetAllDTO): Promise<Order[]> {
-    const statusOrder: TOrderStatus[] = ['Pronto', 'Em preparação', 'Recebido'];
+    const statusOrder: TOrderStatus[] = ['PRONTO', 'EM PREPARACAO', 'RECEBIDO'];
     const statusFilters = !!filters.status.length
       ? {
           status: {

@@ -1,9 +1,10 @@
 import { format } from 'date-fns';
 
 import { OrderProductList } from './order-products-list';
-import { AggregateRoot } from '@core/common/entities/aggregate-root';
+
 import { Optional } from '@core/common/entities/optional';
 import { UniqueEntityID } from '@core/common/entities/unique-entity-id';
+import { Entity } from '@core/common/entities/entity';
 
 export interface IOrderProduct {
   id: string;
@@ -15,11 +16,11 @@ export interface OrderClientProps {
   document: string;
 }
 export type TOrderStatus =
-  | 'Pendente'
-  | 'Recebido'
-  | 'Em preparação'
-  | 'Pronto'
-  | 'Finalizado';
+  | 'PENDENTE'
+  | 'RECEBIDO'
+  | 'EM PREPARACAO'
+  | 'PRONTO'
+  | 'FINALIZADO';
 
 export interface OrderProps {
   client: OrderClientProps | null;
@@ -32,7 +33,7 @@ export interface OrderProps {
   total_price: number;
 }
 
-export class Order extends AggregateRoot<OrderProps> {
+export class Order extends Entity<OrderProps> {
   static create(
     props: Optional<OrderProps, 'created_at' | 'canceled_at' | 'products'>,
     id?: UniqueEntityID,

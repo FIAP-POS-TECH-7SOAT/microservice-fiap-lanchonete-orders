@@ -4,11 +4,11 @@ import { z } from 'zod';
 export const updateStatusOrderSchema = z.object({
   id: z.string(),
   status: z.enum([
-    'Pendente',
-    'Recebido',
-    'Em preparação',
-    'Pronto',
-    'Finalizado',
+    'PENDENTE',
+    'RECEBIDO',
+    'EM PREPARACAO',
+    'PRONTO',
+    'FINALIZADO',
   ]),
 });
 
