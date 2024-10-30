@@ -38,7 +38,7 @@ jobs:
         working-directory: .
         
       - name: Run e2e tests
-        run: npm run test:e2e
+        run: npm run test:e2e:cov
         working-directory: .
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
