@@ -3,11 +3,11 @@ import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 
 import { AppModule } from '../../src/app.module';
-
-import { resetDatabase } from './configs/setup-database';
+import { PrismaService } from '@adapters/drivens/infra/database/prisma/prisma.service';
 
 describe('POST /orders: Order creation feature', () => {
   let app: INestApplication;
+  let prisma: PrismaService;
   let response: request.Response;
 
   beforeAll(async () => {
@@ -16,6 +16,7 @@ describe('POST /orders: Order creation feature', () => {
     }).compile();
 
     app = moduleRef.createNestApplication();
+    prisma = moduleRef.get(PrismaService);
     await app.init();
   });
 
@@ -24,11 +25,6 @@ describe('POST /orders: Order creation feature', () => {
   });
 
   describe('Scenario: Creating an order with valid product details', () => {
-    beforeEach(async () => {
-      // Given the database is reset
-      await resetDatabase(global.prisma);
-    });
-
     it('should create a new order successfully', async () => {
       // When I send a POST request to "/orders" with valid product details
       response = await request(app.getHttpServer())
@@ -58,8 +54,8 @@ describe('POST /orders: Order creation feature', () => {
 
       // And the order status should be "Pendente"
       // And the total amount should be 3
-      const orderDb = await global.prisma.order.findFirst();
-      const orderProductDb = await global.prisma.orderProduct.findMany({
+      const orderDb = await prisma.order.findFirst();
+      const orderProductDb = await prisma.orderProduct.findMany({
         where: {
           order_id: orderDb?.id,
         },
@@ -94,8 +90,8 @@ describe('POST /orders: Order creation feature', () => {
 
       // And the order status should be "Pendente"
       // And the total amount should be 3
-      const orderDb = await global.prisma.order.findFirst();
-      const orderProductDb = await global.prisma.orderProduct.findMany({
+      const orderDb = await prisma.order.findFirst();
+      const orderProductDb = await prisma.orderProduct.findMany({
         where: {
           order_id: orderDb?.id,
         },
@@ -107,11 +103,6 @@ describe('POST /orders: Order creation feature', () => {
     });
   });
   describe('Scenario: Creating an order with invalid product details', () => {
-    beforeEach(async () => {
-      // Given the database is reset
-      await resetDatabase(global.prisma);
-    });
-
     it("shouldn't create a new order with invalid email", async () => {
       // When I send a POST request to "/orders" with invalid email
       response = await request(app.getHttpServer())

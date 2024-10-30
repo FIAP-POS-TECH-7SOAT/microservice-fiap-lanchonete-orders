@@ -3,12 +3,14 @@ import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 
 import { AppModule } from '../../src/app.module';
-import { resetDatabase } from './configs/setup-database';
+
 import { UniqueEntityID } from '@core/common/entities/unique-entity-id';
+import { PrismaService } from '@adapters/drivens/infra/database/prisma/prisma.service';
 
 describe('PUT /orders/{id}/cancel: Cancel order by ID feature', () => {
   let app: INestApplication;
   let response: request.Response;
+  let prisma: PrismaService;
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
@@ -16,6 +18,7 @@ describe('PUT /orders/{id}/cancel: Cancel order by ID feature', () => {
     }).compile();
 
     app = moduleRef.createNestApplication();
+    prisma = moduleRef.get(PrismaService);
     await app.init();
   });
 
@@ -23,16 +26,12 @@ describe('PUT /orders/{id}/cancel: Cancel order by ID feature', () => {
     await app.close();
   });
 
-  beforeEach(async () => {
-    await resetDatabase(global.prisma);
-  });
-
   describe('Scenario: Successfully canceling an existing order by ID', () => {
     it('should cancel the order and return the updated order details when a valid ID is provided', async () => {
       const id = new UniqueEntityID().toString();
 
       // Given an order is created in the database with "PENDENTE" status
-      await global.prisma.order.create({
+      await prisma.order.create({
         data: {
           id,
           status: 'PENDENTE',
@@ -75,7 +74,7 @@ describe('PUT /orders/{id}/cancel: Cancel order by ID feature', () => {
       const id = new UniqueEntityID().toString();
 
       // Given an order is created in the database with "CANCELADO" status
-      await global.prisma.order.create({
+      await prisma.order.create({
         data: {
           id,
           status: 'CANCELADO',

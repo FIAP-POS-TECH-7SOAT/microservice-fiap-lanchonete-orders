@@ -1,17 +1,30 @@
-// jest.setup.js
+import 'dotenv/config';
+import { PrismaClient } from '@prisma/client';
+import { randomUUID } from 'node:crypto';
+import { execSync } from 'node:child_process';
 
-import { StartedPostgreSqlContainer } from '@testcontainers/postgresql';
-import { setupDatabase, teardownDatabase } from './setup-database';
+const prisma = new PrismaClient();
 
-let container: StartedPostgreSqlContainer;
-
+function generateUniqueDatabaseURL(schemaId: string) {
+  if (!process.env.DATABASE_URL) {
+    throw new Error('Please provider a DATABASE_URL environment variable');
+  }
+  const url = new URL(process.env.DATABASE_URL);
+  url.searchParams.set('schema', schemaId);
+  return url.toString();
+}
+const schemaId = randomUUID();
 beforeAll(async () => {
-  const dbSetup = await setupDatabase();
-  global.prisma = dbSetup.prisma;
-  container = dbSetup.container;
+  const databaseURL = generateUniqueDatabaseURL(schemaId);
+  process.env.DATABASE_URL = databaseURL;
+  execSync('npx prisma db push', {
+    env: {
+      ...process.env,
+      DATABASE_URL: databaseURL,
+    },
+  });
 });
-
 afterAll(async () => {
-  await teardownDatabase(container);
-  await global.prisma.$disconnect();
+  await prisma.$executeRawUnsafe(`DROP SCHEMA IF EXISTS "${schemaId}" CASCADE`);
+  await prisma.$disconnect();
 });

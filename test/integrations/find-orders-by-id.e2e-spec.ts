@@ -4,11 +4,12 @@ import { Test } from '@nestjs/testing';
 
 import { AppModule } from '../../src/app.module';
 
-import { resetDatabase } from './configs/setup-database';
 import { UniqueEntityID } from '@core/common/entities/unique-entity-id';
+import { PrismaService } from '@adapters/drivens/infra/database/prisma/prisma.service';
 
 describe('GET /orders/{id}: Find order by ID feature', () => {
   let app: INestApplication;
+  let prisma: PrismaService;
   let response: request.Response;
 
   beforeAll(async () => {
@@ -18,6 +19,7 @@ describe('GET /orders/{id}: Find order by ID feature', () => {
     }).compile();
 
     app = moduleRef.createNestApplication();
+    prisma = moduleRef.get(PrismaService);
     await app.init();
   });
 
@@ -26,17 +28,12 @@ describe('GET /orders/{id}: Find order by ID feature', () => {
     await app.close();
   });
 
-  beforeEach(async () => {
-    // Given the database is reset before each test
-    await resetDatabase(global.prisma);
-  });
-
   describe('Scenario: Successfully retrieving an existing order by ID', () => {
     it('should return the order details when a valid ID is provided', async () => {
       // Given an order is created in the database with "PENDENTE" status
       const id = new UniqueEntityID().toString();
 
-      await global.prisma.order.create({
+      await prisma.order.create({
         data: {
           id,
           status: 'PENDENTE',
