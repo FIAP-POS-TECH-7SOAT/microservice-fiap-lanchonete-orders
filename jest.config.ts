@@ -7,7 +7,13 @@ export default {
   },
 
   collectCoverageFrom: ['src/**/*.{js,ts}'],
-  coveragePathIgnorePatterns: ['/dist/', '\\.module\\.ts$', '/prisma/'],
+  coveragePathIgnorePatterns: [
+    '/dist/',
+    '\\.module\\.ts$',
+    '/prisma/',
+    '\\.spec\\.ts$',
+    '\\.test\\.ts$',
+  ],
   coverageDirectory: './coverage/unit',
   testEnvironment: 'node',
   moduleNameMapper: {
