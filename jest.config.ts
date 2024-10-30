@@ -5,7 +5,8 @@ export default {
   transform: {
     '^.+\\.(t|j)s$': 'ts-jest',
   },
-
+  collectCoverage: true,
+  coverageReporters: ['lcov', 'text'],
   collectCoverageFrom: ['src/**/*.{js,ts}'],
   coveragePathIgnorePatterns: [
     '/dist/',
