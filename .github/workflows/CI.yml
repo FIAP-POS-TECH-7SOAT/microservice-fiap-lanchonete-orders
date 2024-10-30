@@ -22,7 +22,7 @@ jobs:
         working-directory: .
 
       - name: Run unit tests
-        run: npm run test
+        run: npm run test:cov
         working-directory: .
         
       - name: Run e2e tests
