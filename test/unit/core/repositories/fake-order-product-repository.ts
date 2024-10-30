@@ -6,7 +6,7 @@ import { OrderProduct } from '@core/modules/orders/entities/order-products';
 
 export class FakeOrderProductRepository implements OrderProductRepository {
   private prisma: OrderProduct[] = [];
-  constructor() {}
+
   deleteByOrderId(order_id: string): Promise<void> {
     throw new Error('Method not implemented.');
   }
@@ -16,14 +16,12 @@ export class FakeOrderProductRepository implements OrderProductRepository {
     });
   }
   async deleteMany(products: OrderProduct[]): Promise<void> {
-    if (products.length >= 0) {
-      const idsToRemoveSet = new Set(products.map((item) => item.id));
+    const idsToRemoveSet = new Set(products.map((item) => item.id));
 
-      const removed = this.prisma.filter((item) => {
-        return !idsToRemoveSet.has(item.id);
-      });
-      this.prisma = removed;
-    }
+    const removed = this.prisma.filter((item) => {
+      return !idsToRemoveSet.has(item.id);
+    });
+    this.prisma = removed;
   }
   async findManyByOrderId(order_id: string): Promise<OrderProduct[]> {
     const t = this.prisma.filter((item) => {
