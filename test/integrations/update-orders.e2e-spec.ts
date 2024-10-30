@@ -3,13 +3,13 @@ import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 
 import { AppModule } from '../../src/app.module';
-import { resetDatabase } from './configs/setup-database';
 import { UniqueEntityID } from '@core/common/entities/unique-entity-id';
+import { PrismaService } from '@adapters/drivens/infra/database/prisma/prisma.service';
 
 describe('PUT /orders/{id}: Order update feature', () => {
   let app: INestApplication;
   let response: request.Response;
-
+  let prisma: PrismaService;
   beforeAll(async () => {
     // Given the NestJS application is initialized
     const moduleRef = await Test.createTestingModule({
@@ -17,6 +17,7 @@ describe('PUT /orders/{id}: Order update feature', () => {
     }).compile();
 
     app = moduleRef.createNestApplication();
+    prisma = moduleRef.get(PrismaService);
     await app.init();
   });
 
@@ -25,17 +26,12 @@ describe('PUT /orders/{id}: Order update feature', () => {
     await app.close();
   });
 
-  beforeEach(async () => {
-    // Given the database is reset before each test
-    await resetDatabase(global.prisma);
-  });
-
   describe('Scenario: Update an existing order with valid data', () => {
     it('should successfully update an existing order with new product details', async () => {
       // Given an existing order with "PENDING" status
       const id = new UniqueEntityID().toString();
 
-      await global.prisma.order.create({
+      await prisma.order.create({
         data: {
           id,
           status: 'PENDING',
@@ -70,10 +66,10 @@ describe('PUT /orders/{id}: Order update feature', () => {
 
       // And the order in the database should have "PENDING" status
       // And the total amount should be correctly updated to 6
-      const orderDb = await global.prisma.order.findUnique({
+      const orderDb = await prisma.order.findUnique({
         where: { id },
       });
-      const orderProducts = await global.prisma.orderProduct.findMany({
+      const orderProducts = await prisma.orderProduct.findMany({
         where: {
           order_id: id,
         },
@@ -119,7 +115,7 @@ describe('PUT /orders/{id}: Order update feature', () => {
       // Given an existing order in the database
       const id = new UniqueEntityID().toString();
 
-      await global.prisma.order.create({
+      await prisma.order.create({
         data: {
           id,
           status: 'PENDING',
@@ -155,7 +151,7 @@ describe('PUT /orders/{id}: Order update feature', () => {
       // Given an existing order with "PENDING" status
       const id = new UniqueEntityID().toString();
 
-      await global.prisma.order.create({
+      await prisma.order.create({
         data: {
           id,
           status: 'PENDING',

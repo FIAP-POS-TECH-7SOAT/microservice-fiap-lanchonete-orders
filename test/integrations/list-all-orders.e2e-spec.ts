@@ -2,20 +2,21 @@ import * as request from 'supertest';
 import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { AppModule } from '../../src/app.module';
-import { resetDatabase } from './configs/setup-database';
 
 import { UniqueEntityID } from '@core/common/entities/unique-entity-id';
+import { PrismaService } from '@adapters/drivens/infra/database/prisma/prisma.service';
 
 describe('GET /orders: List All Orders', () => {
   let app: INestApplication;
   let response: request.Response;
+  let prisma: PrismaService;
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
-
     app = moduleRef.createNestApplication();
+    prisma = moduleRef.get(PrismaService);
     await app.init();
   });
 
@@ -24,11 +25,6 @@ describe('GET /orders: List All Orders', () => {
   });
 
   describe('Scenario: List All Orders Without Filters', () => {
-    beforeEach(async () => {
-      // Given the database is reset
-      await resetDatabase(global.prisma);
-    });
-
     it('should return an empty array when there are no orders', async () => {
       // When I send a GET request to "/orders"
       response = await request(app.getHttpServer()).get('/orders').send();
@@ -43,14 +39,9 @@ describe('GET /orders: List All Orders', () => {
   });
 
   describe('Scenario: List Orders With Specific Status', () => {
-    beforeEach(async () => {
-      // Given the database is reset
-      await resetDatabase(global.prisma);
-    });
-
     it('should return only orders with status "PENDENTE"', async () => {
       // Creating multiple orders with different statuses
-      await global.prisma.order.createMany({
+      await prisma.order.createMany({
         data: [
           {
             id: new UniqueEntityID().toString(),
@@ -82,9 +73,9 @@ describe('GET /orders: List All Orders', () => {
     });
 
     it('should return an empty array when there are no orders with the specified status', async () => {
-      // When I send a GET request to "/orders?status=RECEBIDO" without creating any "RECEBIDO" orders
+      // When I send a GET request to "/orders?status=PRONTO" without creating any "PRONTO" orders
       response = await request(app.getHttpServer())
-        .get('/orders?status=RECEBIDO')
+        .get('/orders?status=PRONTO')
         .send();
 
       // Then the response status code should be 200
@@ -97,11 +88,6 @@ describe('GET /orders: List All Orders', () => {
   });
 
   describe('Scenario: List Orders With Invalid Status', () => {
-    beforeEach(async () => {
-      // Given the database is reset
-      await resetDatabase(global.prisma);
-    });
-
     it('should return an empty array for an invalid status', async () => {
       // When I send a GET request to "/orders?status=INVALID_STATUS"
 
