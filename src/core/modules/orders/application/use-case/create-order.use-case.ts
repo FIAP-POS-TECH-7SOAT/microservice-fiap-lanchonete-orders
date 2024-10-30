@@ -22,7 +22,7 @@ type ResponseProps = Either<
 >;
 @Injectable()
 export class CreateOrderUseCase {
-  constructor(private orderRepository: OrderRepository) {}
+  constructor(private readonly orderRepository: OrderRepository) {}
   async execute({ client, products }: RequestProps): Promise<ResponseProps> {
     const order = Order.create({
       client,

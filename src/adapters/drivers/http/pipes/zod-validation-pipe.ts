@@ -6,7 +6,7 @@ import {
 import { ZodError, ZodSchema } from 'zod';
 import { fromZodError } from 'zod-validation-error';
 export class ZodValidationPipe implements PipeTransform {
-  constructor(private zodSchema: ZodSchema) {}
+  constructor(private readonly zodSchema: ZodSchema) {}
   transform(value: any, metadata: ArgumentMetadata) {
     try {
       if (metadata.type === 'body') {

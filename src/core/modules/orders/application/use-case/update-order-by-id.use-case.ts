@@ -27,8 +27,8 @@ type ResponseProps = Either<
 @Injectable()
 export class UpdateOrderByIdUseCase {
   constructor(
-    private orderRepository: OrderRepository,
-    private orderProductRepository: OrderProductRepository,
+    private readonly orderRepository: OrderRepository,
+    private readonly orderProductRepository: OrderProductRepository,
   ) {}
   async execute({
     id,

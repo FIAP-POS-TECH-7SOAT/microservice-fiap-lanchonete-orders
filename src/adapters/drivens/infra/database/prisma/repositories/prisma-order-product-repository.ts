@@ -6,7 +6,7 @@ import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class PrismaOrderProductRepository implements OrderProductRepository {
-  constructor(private prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) {}
   async findManyByOrderId(order_id: string): Promise<OrderProduct[]> {
     const orderProducts = await this.prisma.orderProduct.findMany({
       where: {

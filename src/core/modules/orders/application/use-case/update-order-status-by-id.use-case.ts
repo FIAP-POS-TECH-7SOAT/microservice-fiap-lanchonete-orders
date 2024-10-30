@@ -17,7 +17,7 @@ type ResponseProps = Either<
 >;
 @Injectable()
 export class UpdateOrderStatusByIdUseCase {
-  constructor(private orderRepository: OrderRepository) {}
+  constructor(private readonly orderRepository: OrderRepository) {}
   async execute({ id, status }: RequestProps): Promise<ResponseProps> {
     const ORDER_STATUS_FLOW = [
       'PENDENTE',

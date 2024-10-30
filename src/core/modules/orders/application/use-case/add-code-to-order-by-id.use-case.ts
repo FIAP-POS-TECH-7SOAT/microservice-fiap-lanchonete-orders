@@ -18,8 +18,8 @@ type ResponseProps = Either<
 @Injectable()
 export class AddCodeToOrderByIdUseCase {
   constructor(
-    private orderRepository: OrderRepository,
-    private generateCodeProvider: GenerateCodeProvider,
+    private readonly orderRepository: OrderRepository,
+    private readonly generateCodeProvider: GenerateCodeProvider,
   ) {}
   async execute({ id }: RequestProps): Promise<ResponseProps> {
     const order = await this.orderRepository.findById(id);
