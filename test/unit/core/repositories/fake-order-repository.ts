@@ -19,7 +19,9 @@ interface OrderRepositoryProps {
 }
 export class FakeOrderRepository implements OrderRepository {
   private prisma: OrderRepositoryProps[] = [];
-  constructor(private orderProductRepository: OrderProductRepository) {}
+  constructor(
+    private readonly orderProductRepository: OrderProductRepository,
+  ) {}
   async create(data: Order): Promise<Order> {
     const order = OrderMapping.toPrisma(data);
     this.prisma.push(order);
@@ -29,7 +31,9 @@ export class FakeOrderRepository implements OrderRepository {
     return data;
   }
   async update(data: Order): Promise<Order> {
-    const orderIndex = this.prisma.findIndex((item) => item.id === item.id);
+    const orderIndex = this.prisma.findIndex(
+      (item) => item.id === data.id.toString(),
+    );
     if (orderIndex >= 0) {
       const order = OrderMapping.toPrisma(data);
       this.prisma[orderIndex] = order;

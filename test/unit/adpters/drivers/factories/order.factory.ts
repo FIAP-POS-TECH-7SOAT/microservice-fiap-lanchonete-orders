@@ -40,7 +40,9 @@ export class OrderFactory {
         ? products.map((item) =>
             OrderProduct.create({
               amount: item.amount ?? faker.number.int(),
-              product_id: new UniqueEntityID(item.id) ?? new UniqueEntityID(),
+              product_id: item.id
+                ? new UniqueEntityID(item.id)
+                : new UniqueEntityID(),
               order_id: defaultOrder.id,
               unit_price:
                 item.unit_price ?? Number(faker.commerce.price({ min: 100 })),
