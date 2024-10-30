@@ -8,7 +8,7 @@
 
   "collectCoverageFrom": ["src/**/*.{js,ts}"],
   "coveragePathIgnorePatterns": ["/dist/"],
-  "coverageDirectory": "./coverage",
+  "coverageDirectory": "./coverage/e2e",
   "testEnvironment": "node",
   "moduleNameMapper": {
     "^@core/(.*)$": "<rootDir>/src/core/$1",

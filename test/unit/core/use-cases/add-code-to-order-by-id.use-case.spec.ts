@@ -26,7 +26,7 @@ describe(AddCodeToOrderByIdUseCase.name, () => {
   it('should add code to order ', async () => {
     const myOrder = Order.create(
       {
-        status: 'Pendente',
+        status: 'PENDENTE',
         total_amount: 1,
         total_price: 1,
         code: '',
