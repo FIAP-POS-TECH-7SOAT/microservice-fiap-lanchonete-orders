@@ -19,16 +19,16 @@ type ResponseProps = Either<
 >;
 @Injectable()
 export class CancelOrderByIdUseCase {
-  constructor(private orderRepository: OrderRepository) {}
+  constructor(private readonly orderRepository: OrderRepository) {}
   async execute({ id }: RequestProps): Promise<ResponseProps> {
     const order = await this.orderRepository.findById(id);
     if (!order) {
       return left(new ResourceNotFoundError());
     }
-    if (!!order.code) {
+    if (order.code) {
       return left(new OrderAlreadyInProgressError());
     }
-    if (!!order.canceled_at) {
+    if (order.canceled_at) {
       return left(new ResourceAlreadyProcessedError());
     }
     order.canceled_at = new Date();

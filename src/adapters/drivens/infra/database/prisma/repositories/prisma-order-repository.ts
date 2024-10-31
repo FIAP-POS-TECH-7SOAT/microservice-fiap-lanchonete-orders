@@ -9,8 +9,8 @@ import { Injectable } from '@nestjs/common';
 @Injectable()
 export class PrismaOrderRepository implements OrderRepository {
   constructor(
-    private prisma: PrismaService,
-    private orderProductRepository: OrderProductRepository,
+    private readonly prisma: PrismaService,
+    private readonly orderProductRepository: OrderProductRepository,
   ) {}
 
   async findById(id: string): Promise<Order | null> {
@@ -30,7 +30,7 @@ export class PrismaOrderRepository implements OrderRepository {
 
   async getAll({ filters }: GetAllDTO): Promise<Order[]> {
     const statusOrder: TOrderStatus[] = ['PRONTO', 'EM PREPARACAO', 'RECEBIDO'];
-    const statusFilters = !!filters.status.length
+    const statusFilters = filters.status.length
       ? {
           status: {
             in: filters.status,
@@ -57,12 +57,16 @@ export class PrismaOrderRepository implements OrderRepository {
 
     // Sort the orders based on the custom status order "statusOrder"
     // Pronto > Em preparação > Recebido
-    const sortedOrders = orders.sort((a, b) => {
-      return (
-        statusOrder.indexOf(a.status as TOrderStatus) -
-        statusOrder.indexOf(b.status as TOrderStatus)
-      );
-    });
+    const statusIndexMap = new Map<TOrderStatus, number>(
+      statusOrder.map((status, index) => [status, index]),
+    );
+
+    // Sort the orders based on the custom status order without mutating the original array
+    const sortedOrders = orders.sort(
+      (a, b) =>
+        (statusIndexMap.get(a.status as TOrderStatus) || Infinity) -
+        (statusIndexMap.get(b.status as TOrderStatus) || Infinity),
+    );
 
     return sortedOrders.map(OrderMapping.toDomain);
   }

@@ -17,7 +17,7 @@ type ResponseProps = Either<
 
 @Injectable()
 export class ListAllOrdersByFiltersUseCase {
-  constructor(private orderRepository: OrderRepository) {}
+  constructor(private readonly orderRepository: OrderRepository) {}
   async execute({ filters }: RequestProps): Promise<ResponseProps> {
     const orders = await this.orderRepository.getAll({ filters });
 

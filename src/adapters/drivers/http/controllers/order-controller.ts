@@ -46,12 +46,12 @@ import { InvalidOrderStatusError } from '@core/modules/orders/application/errors
 @UseInterceptors(LoggingInterceptor)
 export class OrderController {
   constructor(
-    private createOrderUseCase: CreateOrderUseCase,
-    private listAllOrdersByFiltersUseCase: ListAllOrdersByFiltersUseCase,
-    private updateOrderByIdUseCase: UpdateOrderByIdUseCase,
-    private findOrderByIdUseCase: FindOrderByIdUseCase,
-    private cancelOrderByIdUseCase: CancelOrderByIdUseCase,
-    private updateOrderStatusByIdUseCase: UpdateOrderStatusByIdUseCase,
+    private readonly createOrderUseCase: CreateOrderUseCase,
+    private readonly listAllOrdersByFiltersUseCase: ListAllOrdersByFiltersUseCase,
+    private readonly updateOrderByIdUseCase: UpdateOrderByIdUseCase,
+    private readonly findOrderByIdUseCase: FindOrderByIdUseCase,
+    private readonly cancelOrderByIdUseCase: CancelOrderByIdUseCase,
+    private readonly updateOrderStatusByIdUseCase: UpdateOrderStatusByIdUseCase,
   ) {}
 
   @Post('/')
